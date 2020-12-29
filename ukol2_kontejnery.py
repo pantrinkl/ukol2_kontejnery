@@ -1,6 +1,7 @@
 import json
 from pyproj import CRS, Transformer
 import math
+from statistics import median
 
 def extract_adres(polozka):
     geom_ad = []
@@ -35,6 +36,9 @@ def vypocet_vzdalenosti(adresy, kontejnery):
             delka = math.sqrt(((cast[0]-kus[0])**2)+((cast[1]-kus[1])**2))
             if mindl > delka:
                 mindl = delka
+        if mindl == 10000:
+            print("Nejbližší kontejner je pro některou adresu dále než 10 km. Nastala chyba, končím.")
+            quit()
         vzdalenosti.append(mindl)
     return vzdalenosti
 
@@ -62,8 +66,10 @@ vzdalenosti = vypocet_vzdalenosti(geom_ad_sjtsk, geom_kon)
 
 suma = sum(vzdalenosti)
 prumer = suma/len(vzdalenosti)
+vz_median = median(vzdalenosti)
 
 indmax = vzdalenosti.index(max(vzdalenosti))
 
 print("Průměrná vzdálenost ke kontejneru je",round(prumer),"m.")
+print("Medián vzdáleností ke kontejneru je",round(vz_median),"m.")
 print("Nejdelší vzdálenost ke kontejneru je z adresy",ad_ulice[indmax],ad_num[indmax],", a to",round(max(vzdalenosti)),"m.")
