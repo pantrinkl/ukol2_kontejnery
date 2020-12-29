@@ -2,13 +2,11 @@ import json
 from pyproj import CRS, Transformer
 import math
 
-geom_ad = []
-geom_kon = []
-ad_ulice = []
-ad_num = []
-
-with open("adresy.geojson", "r") as a:
-    data = json.load(a)
+def extract_adres(polozka):
+    geom_ad = []
+    ad_num = []
+    ad_ulice = []
+    data = json.load(polozka)
     adresy = list(data['features'])
     for cast in adresy:
         geometrie = cast['geometry']['coordinates']
@@ -17,16 +15,36 @@ with open("adresy.geojson", "r") as a:
         ad_num.append(cislo)
         ulice = cast['properties']['addr:street']
         ad_ulice.append(ulice)
+    return geom_ad, ad_num, ad_ulice
 
-print("Načteno ",len(geom_ad)," adres.")
-
-with open("kontejnery.geojson", "r") as k:
-    data = json.load(k)
+def extract_kontejner(polozka):
+    geom_kon = []
+    data = json.load(polozka)
     kontejnery = list(data['features'])
     for cast in kontejnery:
         if cast['properties']['PRISTUP']=="volně":
             geometrie = cast['geometry']['coordinates']
             geom_kon.append(geometrie)
+    return geom_kon
+
+def vypocet_vzdalenosti(adresy, kontejnery):
+    vzdalenosti = []
+    for cast in adresy:
+        mindl = 10000
+        for kus in kontejnery:
+            delka = math.sqrt(((cast[0]-kus[0])**2)+((cast[1]-kus[1])**2))
+            if mindl > delka:
+                mindl = delka
+        vzdalenosti.append(mindl)
+    return vzdalenosti
+
+with open("adresy.geojson", "r") as a:
+    geom_ad, ad_num, ad_ulice = extract_adres(a)
+
+print("Načteno ",len(geom_ad)," adres.")
+
+with open("kontejnery.geojson", "r") as k:
+    geom_kon = extract_kontejner(k)
 
 print("Načteno ",len(geom_kon)," kontejnerů.")
 
@@ -40,15 +58,7 @@ wgs2jtsk = Transformer.from_crs(wgs,sjtsk)
 for cast in geom_ad:
     geom_ad_sjtsk.append(wgs2jtsk.transform(cast[1], cast[0]))
 
-vzdalenosti = []
-
-for cast in geom_ad_sjtsk:
-    mindl = 10000
-    for kus in geom_kon:
-        delka = math.sqrt(((cast[0]-kus[0])**2)+((cast[1]-kus[1])**2))
-        if mindl > delka:
-            mindl = delka
-    vzdalenosti.append(mindl)
+vzdalenosti = vypocet_vzdalenosti(geom_ad_sjtsk, geom_kon)
 
 suma = sum(vzdalenosti)
 prumer = suma/len(vzdalenosti)
