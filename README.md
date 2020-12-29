@@ -2,11 +2,11 @@
 
 Tento program slouží k vypočtení průměru a mediánu vzdáleností k veřejným kontejnerům pro určené adresy.
 
-Dále program nalezne adresu, ze které je vzdálenost ke kontejneru nevětší a vypíše ji.
+Dále program nalezne adresu, ze které je vzdálenost ke kontejneru největší a vypíše ji.
 
 ## Vstupní parametry
 
-Ve složce, kde je uložen `.py`, soubor je nutné mít další dva vstupní sobory:
+Ve složce, kde je uložen `.py` soubor, je nutné mít další dva vstupní sobory:
 * `adresy.geojson` - soubor ve formátu GeoJson, kde jsou uložené požadované adresy (např. čtvrtě).
 * `kontejnery.geojson` - soubor ve formátu GeoJson, kde jsou uložené kontejnery požadované oblasti.
 
