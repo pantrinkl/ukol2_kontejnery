@@ -4,28 +4,28 @@ import math
 from statistics import median
 from sys import exit
 
-# funkce k extrakci ulice, c.p. a souradnic adres
-def extract_adres(polozka):
-    geom_ad = []
-    ad_num = []
-    ad_ulice = []
+# extrakci ulice, c.p. a souradnic adres
+def vypis_adres(polozka):
+    geom = []
+    cp = []
+    ulicka = []
     # nacteni geojsonu z jeho adresy
     data = json.load(polozka)
     adresy = list(data['features'])
     # extrakce dat pro kazdou adresu
     for cast in adresy:
         geometrie = cast['geometry']['coordinates']
-        geom_ad.append(geometrie)
+        geom.append(geometrie)
         cislo = cast['properties']['addr:housenumber']
-        ad_num.append(cislo)
+        cp.append(cislo)
         ulice = cast['properties']['addr:street']
-        ad_ulice.append(ulice)
+        ulicka.append(ulice)
     # vraceni seznamu souradnic, c.p. a ulice
-    return geom_ad, ad_num, ad_ulice
+    return geom, cp, ulicka
 
-# funkce k extrakci souradnic kontejneru
-def extract_kontejner(polozka):
-    geom_kon = []
+# extrakce souradnic kontejneru
+def vypis_kontejneru(polozka):
+    geom = []
     # nacteni geojsonu z jeho adresy
     data = json.load(polozka)
     kontejnery = list(data['features'])
@@ -33,9 +33,9 @@ def extract_kontejner(polozka):
     for cast in kontejnery:
         if cast['properties']['PRISTUP']=="volně":
             geometrie = cast['geometry']['coordinates']
-            geom_kon.append(geometrie)
+            geom.append(geometrie)
     # vraceni souradnic
-    return geom_kon
+    return geom
 
 # vypocet vzdalenosti k nejblizsimu kontejneru
 def vypocet_vzdalenosti(adresy, kontejnery):
@@ -43,7 +43,7 @@ def vypocet_vzdalenosti(adresy, kontejnery):
     # pro kazdou adresu
     for cast in adresy:
         #  nastavime nejblizsi kontejner na 10 km
-        mindl = 10000
+        mindl = 10001
         # a projedeme kontejnery
         # pokud je vzdalenost pod 10 km, nahradime nejblizsi kontejner timto
         for kus in kontejnery:
@@ -51,7 +51,7 @@ def vypocet_vzdalenosti(adresy, kontejnery):
             if mindl > delka:
                 mindl = delka
         # pokud je stale vzdalenost k nejblizsimu 10 km, je jasne, ze adresa je ponekud daleko.
-        if mindl == 10000:
+        if mindl == 10001:
             print("Nejbližší kontejner je pro některou adresu dále než 10 km. Nastala chyba, končím.")
             quit()
         vzdalenosti.append(mindl)
@@ -61,7 +61,7 @@ def vypocet_vzdalenosti(adresy, kontejnery):
 # otevreni jsonu s adresami, extrakce adres a jejich souradnic
 try:
     with open("adresy.geojson", "r") as a:
-        geom_ad, ad_num, ad_ulice = extract_adres(a)
+        geom_ad, ad_num, ad_ulice = vypis_adres(a)
 except FileNotFoundError:
     exit("Nenalezen soubor s adresami.")
 except PermissionError:
@@ -73,7 +73,7 @@ print("Načteno ",len(geom_ad)," adres.")
 # otevreni jsonu s kontejnery, extrakce jejich souradnic
 try:
     with open("kontejnery.geojson", "r") as k:
-        geom_kon = extract_kontejner(k)
+        geom_kon = vypis_kontejneru(k)
 except FileNotFoundError:
     exit("Nenalezen soubor s kontejnery.")
 except PermissionError:
@@ -106,4 +106,4 @@ indmax = vzdalenosti.index(max(vzdalenosti))
 # vypsani dulezitych dat
 print("Průměrná vzdálenost ke kontejneru je",round(prumer),"m.")
 print("Medián vzdáleností ke kontejneru je",round(vz_median),"m.")
-print("Nejdelší vzdálenost ke kontejneru je z adresy",ad_ulice[indmax],ad_num[indmax],", a to",round(max(vzdalenosti)),"m.")
+print("Nejdelší vzdálenost ke kontejneru je z adresy",ad_ulice[indmax],ad_num[indmax]," a to",round(max(vzdalenosti)),"m.")

@@ -15,7 +15,7 @@ Pro funkčnost programu je nutné, aby souřadnice adres byly v systému WGS 84 
 Z tohoto repozitáře lze stáhnout vzorová data pro městskou čtvť Vršovice v Praze.
 
 Soubory adres lze stáhnout například na stránkách [Overpass Turbo](http://overpass-turbo.eu/).
-Data kontejnerů lze sáthnout na [pražském Geoportálu](https://www.geoportalpraha.cz/cs/data/otevrena-data/8726EF0E-0834-463B-9E5F-FE09E62D73FB)
+Data kontejnerů lze stáhnout na [pražském Geoportálu](https://www.geoportalpraha.cz/cs/data/otevrena-data/8726EF0E-0834-463B-9E5F-FE09E62D73FB)
 
 ## Výstup
 
