@@ -8,15 +8,15 @@ Dále program nalezne adresu, ze které je vzdálenost ke kontejneru největší
 
 Ve složce, kde je uložen `.py` soubor, je nutné mít další dva vstupní sobory:
 
-* `adresy.geojson` - soubor ve formátu GeoJson, kde jsou uložené požadované adresy (např. čtvrtě).  
-Nutné atributy pro každou adresu:  
-`coordinates` - souřadnice 
-`addr:housenumber` - číslo domu 
-`addr:street` - název ulice 
+* `adresy.geojson` - soubor ve formátu GeoJson, kde jsou uložené požadované adresy (např. čtvrtě).\
+Nutné atributy pro každou adresu:\
+`coordinates` - souřadnice\
+`addr:housenumber` - číslo domu\
+`addr:street` - název ulice\
 
-* `kontejnery.geojson` - soubor ve formátu GeoJson, kde jsou uložené kontejnery požadované oblasti.  
-Nutné atributy pro každý kontejner:  
-`coordinates` - souřadnice  
+* `kontejnery.geojson` - soubor ve formátu GeoJson, kde jsou uložené kontejnery požadované oblasti.\
+Nutné atributy pro každý kontejner:\
+`coordinates` - souřadnice\
 
 Pro funkčnost programu je nutné, aby souřadnice adres byly v systému WGS 84 (EPSG: 4326). Souřadnice kontejnerů musí naopak být v systému S-JTSK (EPSG: 5514)
 
