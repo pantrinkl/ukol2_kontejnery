@@ -5,33 +5,39 @@ from statistics import median
 from sys import exit
 from argparse import ArgumentParser
 
-# extrakci ulice, c.p. a souradnic adres
-def vypis_adres(polozka):
+# nacteni dat z geoJSONu
+def nacti_json(adresy):
+    try:
+        with open(adresy, "r") as a:
+            data = json.load(a)
+            polozky = list(data['features'])
+            return polozky
+    except FileNotFoundError:
+        exit("Nenalezen soubor s adresami.")
+    except PermissionError:
+        exit("Nemám přístup k souboru s adresami.")
+
+# extrakce ulice, c.p. a souradnic adres
+def extrakce_adres(data):
     geom = []
     cp = []
-    ulicka = []
-    # nacteni geojsonu z jeho adresy
-    data = json.load(polozka)
-    adresy = list(data['features'])
+    ulicky = []
     # extrakce dat pro kazdou adresu
-    for cast in adresy:
+    for cast in data:
         geometrie = cast['geometry']['coordinates']
         geom.append(geometrie)
         cislo = cast['properties']['addr:housenumber']
         cp.append(cislo)
         ulice = cast['properties']['addr:street']
-        ulicka.append(ulice)
+        ulicky.append(ulice)
     # vraceni seznamu souradnic, c.p. a ulice
-    return geom, cp, ulicka
+    return geom, cp, ulicky
 
 # extrakce souradnic kontejneru
-def vypis_kontejneru(polozka):
+def extrakce_kontejneru(data):
     geom = []
-    # nacteni geojsonu z jeho adresy
-    data = json.load(polozka)
-    kontejnery = list(data['features'])
     # extrakce souradnic kazdeho kontejneru
-    for cast in kontejnery:
+    for cast in data:
         if cast['properties']['PRISTUP']=="volně":
             geometrie = cast['geometry']['coordinates']
             geom.append(geometrie)
@@ -77,25 +83,14 @@ if args.kontejnery == None:
     args.kontejnery = "kontejnery.geojson"
 
 # otevreni jsonu s adresami, extrakce adres a jejich souradnic
-try:
-    with open(args.adresy, "r") as a:
-        geom_ad, ad_num, ad_ulice = vypis_adres(a)
-except FileNotFoundError:
-    exit("Nenalezen soubor s adresami.")
-except PermissionError:
-    exit("Nemám přístup k souboru s adresami.")
-
+ad_polozky = nacti_json(args.adresy)
+geom_ad, ad_num, ad_ulice = extrakce_adres(ad_polozky)
 
 print("Načteno ",len(geom_ad)," adres.")
 
 # otevreni jsonu s kontejnery, extrakce jejich souradnic
-try:
-    with open(args.kontejnery, "r") as k:
-        geom_kon = vypis_kontejneru(k)
-except FileNotFoundError:
-    exit("Nenalezen soubor s kontejnery.")
-except PermissionError:
-    exit("Nemám přístup k souboru s kontejnery.")
+kon_polozky = nacti_json(args.kontejnery)
+geom_kon = extrakce_kontejneru(kon_polozky)
 
 print("Načteno ",len(geom_kon)," kontejnerů.")
 
@@ -122,6 +117,6 @@ vz_median = median(vzdalenosti)
 indmax = vzdalenosti.index(max(vzdalenosti))
 
 # vypsani dulezitych dat
-print("Průměrná vzdálenost ke kontejneru je",round(prumer),"m.")
-print("Medián vzdáleností ke kontejneru je",round(vz_median),"m.")
-print("Nejdelší vzdálenost ke kontejneru je z adresy",ad_ulice[indmax],ad_num[indmax]," a to",round(max(vzdalenosti)),"m.")
+print(f"Průměrná vzdálenost ke kontejneru je {prumer:.0f} m.")
+print(f"Medián vzdáleností ke kontejneru je {vz_median:.0f} m.")
+print("Nejdelší vzdálenost ke kontejneru je z adresy",ad_ulice[indmax],ad_num[indmax],f"a to {max(vzdalenosti):.0f} m.")
