@@ -3,6 +3,7 @@ from pyproj import CRS, Transformer
 import math
 from statistics import median
 from sys import exit
+from argparse import ArgumentParser
 
 # extrakci ulice, c.p. a souradnic adres
 def vypis_adres(polozka):
@@ -58,9 +59,26 @@ def vypocet_vzdalenosti(adresy, kontejnery):
     # vraceni vzdalenosti adres k nejblizsimu kontejneru
     return vzdalenosti
 
+# nacteni adres vstupnich souboru
+parser = ArgumentParser(description="Nacteni vstupnich souboru")
+
+parser.add_argument("-a", dest="adresy", required=False,
+                    help="jmeno souboru s adresami", type = str)
+parser.add_argument("-k", dest="kontejnery", required=False,
+                    help="jmeno souboru s kontejnery", type = str)
+
+args = parser.parse_args()
+
+# pokud uzivatel nedodal adresy, predpokladame pudvodni nazvy
+if args.adresy == None:
+    args.adresy = "adresy.geojson"
+
+if args.kontejnery == None:
+    args.kontejnery = "kontejnery.geojson"
+
 # otevreni jsonu s adresami, extrakce adres a jejich souradnic
 try:
-    with open("adresy.geojson", "r") as a:
+    with open(args.adresy, "r") as a:
         geom_ad, ad_num, ad_ulice = vypis_adres(a)
 except FileNotFoundError:
     exit("Nenalezen soubor s adresami.")
@@ -72,7 +90,7 @@ print("Načteno ",len(geom_ad)," adres.")
 
 # otevreni jsonu s kontejnery, extrakce jejich souradnic
 try:
-    with open("kontejnery.geojson", "r") as k:
+    with open(args.kontejnery, "r") as k:
         geom_kon = vypis_kontejneru(k)
 except FileNotFoundError:
     exit("Nenalezen soubor s kontejnery.")
