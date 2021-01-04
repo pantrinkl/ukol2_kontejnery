@@ -8,19 +8,20 @@ Dále program nalezne adresu, ze které je vzdálenost ke kontejneru největší
 
 Ve složce, kde je uložen `.py` soubor, je nutné mít další dva vstupní sobory:
 
-* `adresy.geojson` - soubor ve formátu GeoJson, kde jsou uložené požadované adresy (např. čtvrtě).\
+* `adresy.geojson` - soubor ve formátu GeoJSON, kde jsou uložené požadované adresy (např. čtvrtě).\
 Nutné atributy pro každou adresu:\
-`"coordinates"` - souřadnice\
 `"addr:housenumber"` - číslo domu\
-`"addr:street"` - název ulice
+`"addr:street"` - název ulice\
+\
+Souřadnice adres musí být uvedeny v systému WGS 84 (EPSG: 4326).
 
-* `kontejnery.geojson` - soubor ve formátu GeoJson, kde jsou uložené kontejnery požadované oblasti.\
+* `kontejnery.geojson` - soubor ve formátu GeoJSON, kde jsou uložené kontejnery požadované oblasti.\
 Nutné atributy pro každý kontejner:\
-`"coordinates"` - souřadnice
+`"PRISTUP"` - zda je kontejner volně příštupný\
+\
+Souřadnice kontejnerů musí být v systému S-JTSK (EPSG: 5514).
 
 Pokud máte data uložená v jiných souborech, lze je při spuštění programu zadat. Přidáním argumentu `-a <nazev_souboru>` zvolíte soubor s adresami. Argumentem `-k <nazev_souboru>` vložíte název souboru s kontejnery. Při nedodání argumentů při spuštění programu je předpokládáno, že se soubory jmenují, jak jsou nazvány výše.
-
-Pro funkčnost programu je nutné, aby souřadnice adres byly v systému WGS 84 (EPSG: 4326). Souřadnice kontejnerů musí naopak být v systému S-JTSK (EPSG: 5514)
 
 Z tohoto repozitáře lze stáhnout vzorová data pro městskou čtvť Vršovice v Praze.
 
